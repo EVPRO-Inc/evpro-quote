@@ -1,0 +1,101 @@
+/* EV.PRO brand tokens — kept in sync with the Volta app (evpro-fleet). */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --brand-blue:   #0021F8;
+  --brand-blue-v: #1919E4;
+  --brand-blue-o: #063479;
+  --brand-gradient: linear-gradient(135deg, #0021F8 0%, #063479 100%);
+
+  --white:     #FFFFFF;
+  --off-white: #F4F6FA;
+  --dark:      #202020;
+  --black:     #080707;
+
+  --primary:       var(--brand-blue);
+  --primary-hover: var(--brand-blue-v);
+  --primary-light: #EEF1FB;
+
+  --text:        #202020;
+  --text-muted:  #6B7280;
+  --border:      #E4E7EE;
+  --border-strong: #C9CEDA;
+
+  --radius: 12px;
+  --radius-sm: 8px;
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Geist', 'Inter', system-ui, sans-serif;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--font-sans);
+  color: var(--text);
+  background: var(--off-white);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--primary); }
+
+/* Header */
+.site-header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+}
+.site-header .inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+}
+.brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  color: var(--brand-blue);
+}
+
+/* Page */
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 5vw, 44px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.hero p {
+  margin-top: 12px;
+  color: var(--text-muted);
+  max-width: 560px;
+  font-size: 17px;
+}
+
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+
+.btn {
+  font: inherit;
+  font-weight: 600;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 28px;
+  cursor: pointer;
+  background: var(--primary);
+  color: var(--white);
+  transition: background .15s ease;
+}
+.btn:hover { background: var(--primary-hover); }
