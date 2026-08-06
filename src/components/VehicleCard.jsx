@@ -1,5 +1,5 @@
 import Field from './Field.jsx'
-import { CONDITIONS, US_STATES, vehicleLabel } from '../lib/quoteModel.js'
+import { CONDITIONS, US_STATES, OEMS, PRODUCTS, modelsFor, vehicleLabel } from '../lib/quoteModel.js'
 
 export default function VehicleCard({
   vehicle, index, expanded, canRemove, onToggle, onChange, onDuplicate, onRemove,
@@ -7,11 +7,20 @@ export default function VehicleCard({
   const set = (key) => (e) => onChange({ ...vehicle, [key]: e.target.value })
   const setBool = (key) => (e) => onChange({ ...vehicle, [key]: e.target.checked })
 
+  // Changing make resets the model so a stale selection can't survive.
+  const setMake = (e) =>
+    onChange({ ...vehicle, make: e.target.value, model: '', modelOther: '' })
+
+  const models = modelsFor(vehicle.make)
+
   if (!expanded) {
     return (
       <div className="vehicle collapsed">
         <button type="button" className="vehicle-summary" onClick={onToggle} aria-expanded="false">
-          <span className="vehicle-title">{vehicleLabel(vehicle, index)}</span>
+          <span className="vehicle-title">
+            {vehicle.qty > 1 && <span className="qty-badge">{vehicle.qty}×</span>}
+            {vehicleLabel(vehicle, index)}
+          </span>
           <span className="chev" aria-hidden="true">▾</span>
         </button>
       </div>
@@ -41,40 +50,93 @@ export default function VehicleCard({
         </div>
       </div>
 
+      {/* Row 1 — identity */}
       <div className="grid">
-        <Field label="Make"><input value={vehicle.make} onChange={set('make')} placeholder="Cadillac" /></Field>
-        <Field label="Model"><input value={vehicle.model} onChange={set('model')} placeholder="Lyriq" /></Field>
+        <Field label="Make">
+          <select value={vehicle.make} onChange={setMake}>
+            <option value="">Select a make</option>
+            {OEMS.map((m) => <option key={m} value={m}>{m}</option>)}
+          </select>
+        </Field>
+        <Field label="Model">
+          {models ? (
+            <select value={vehicle.model} onChange={set('model')}>
+              <option value="">Select a model</option>
+              {models.map((m) => <option key={m} value={m}>{m}</option>)}
+              <option value="Other">Other</option>
+            </select>
+          ) : (
+            <input
+              value={vehicle.model}
+              onChange={set('model')}
+              disabled={!vehicle.make}
+              placeholder={vehicle.make ? '' : 'Select a make first'}
+            />
+          )}
+        </Field>
         <Field label="New / used">
           <select value={vehicle.condition} onChange={set('condition')}>
             {CONDITIONS.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
         </Field>
-        <Field label="Exterior color"><input value={vehicle.color} onChange={set('color')} placeholder="Black" /></Field>
-        <Field label="Trim"><input value={vehicle.trim} onChange={set('trim')} placeholder="Luxury" /></Field>
-        <Field label="Max daily miles"><input value={vehicle.dailyMiles} onChange={set('dailyMiles')} placeholder="250" inputMode="numeric" /></Field>
-        <Field label="Annual miles"><input value={vehicle.annualMiles} onChange={set('annualMiles')} placeholder="60,000" inputMode="numeric" /></Field>
-        <Field label="Target delivery"><input value={vehicle.targetDelivery} onChange={set('targetDelivery')} placeholder="ASAP" /></Field>
+      </div>
+
+      {vehicle.model === 'Other' && (
+        <div className="grid" style={{ marginTop: 14 }}>
+          <Field label="Model (type it in)" className="col-full">
+            <input value={vehicle.modelOther} onChange={set('modelOther')} autoFocus />
+          </Field>
+        </div>
+      )}
+
+      {/* Row 2 — usage */}
+      <div className="grid" style={{ marginTop: 14 }}>
+        <Field label="Max daily miles">
+          <input value={vehicle.dailyMiles} onChange={set('dailyMiles')} inputMode="numeric" />
+        </Field>
+        <Field label="Annual miles">
+          <input value={vehicle.annualMiles} onChange={set('annualMiles')} inputMode="numeric" />
+        </Field>
+        <Field label="Target delivery">
+          <input type="date" value={vehicle.targetDelivery} onChange={set('targetDelivery')} />
+        </Field>
+      </div>
+
+      {/* Row 3 — specs + quantity */}
+      <div className="grid" style={{ marginTop: 14 }}>
+        <Field label="Exterior color">
+          <input value={vehicle.color} onChange={set('color')} />
+        </Field>
+        <Field label="Trim">
+          <input value={vehicle.trim} onChange={set('trim')} />
+        </Field>
+        <Field label="Quantity">
+          <input type="number" min="1" value={vehicle.qty} onChange={set('qty')} />
+        </Field>
       </div>
 
       <div className="subhead">Garaging address</div>
       <div className="grid">
         <Field label="Street address" className="col-2">
-          <input value={vehicle.garagingAddress} onChange={set('garagingAddress')} placeholder="3705 Mindy Ashley Ln" />
+          <input value={vehicle.garagingAddress} onChange={set('garagingAddress')} />
         </Field>
-        <Field label="City"><input value={vehicle.city} onChange={set('city')} placeholder="Jacksonville" /></Field>
+        <Field label="City"><input value={vehicle.city} onChange={set('city')} /></Field>
         <Field label="State">
           <select value={vehicle.state} onChange={set('state')}>
             <option value="">—</option>
             {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
         </Field>
-        <Field label="ZIP"><input value={vehicle.zip} onChange={set('zip')} placeholder="32218" inputMode="numeric" /></Field>
+        <Field label="ZIP"><input value={vehicle.zip} onChange={set('zip')} inputMode="numeric" /></Field>
       </div>
 
       <div className="products">
         <span className="subhead inline">Products needed</span>
-        <label className="check"><input type="checkbox" checked={vehicle.needsVaas} onChange={setBool('needsVaas')} /> Vehicle-as-a-Service</label>
-        <label className="check"><input type="checkbox" checked={vehicle.needsCaas} onChange={setBool('needsCaas')} /> Charger-as-a-Service</label>
+        {PRODUCTS.map((p) => (
+          <label key={p.key} className="check">
+            <input type="checkbox" checked={vehicle[p.key]} onChange={setBool(p.key)} /> {p.label}
+          </label>
+        ))}
       </div>
 
       <Field label="Other comments (uplifting needs, etc.)" className="col-full">

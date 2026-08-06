@@ -1,5 +1,5 @@
 import VehicleCard from './VehicleCard.jsx'
-import { blankVehicle, duplicateVehicle } from '../lib/quoteModel.js'
+import { blankVehicle, duplicateVehicle, totalUnits } from '../lib/quoteModel.js'
 
 export default function VehiclesStep({ vehicles, expandedId, onChange, setExpandedId }) {
   const update = (next) => onChange(next)
@@ -29,11 +29,13 @@ export default function VehiclesStep({ vehicles, expandedId, onChange, setExpand
 
   const toggle = (id) => setExpandedId(expandedId === id ? null : id)
 
+  const units = totalUnits(vehicles)
+
   return (
     <section>
       <div className="section-head">
-        <h2 className="step-heading">One card per vehicle</h2>
-        <span className="count">{vehicles.length} vehicle{vehicles.length === 1 ? '' : 's'}</span>
+        <h2 className="step-heading">One card per vehicle type</h2>
+        <span className="count">{units} vehicle{units === 1 ? '' : 's'} total</span>
       </div>
 
       <div className="vehicle-list">

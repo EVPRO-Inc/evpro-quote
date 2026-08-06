@@ -3,7 +3,7 @@ import Stepper from './components/Stepper.jsx'
 import ContactStep from './components/ContactStep.jsx'
 import VehiclesStep from './components/VehiclesStep.jsx'
 import ReviewStep from './components/ReviewStep.jsx'
-import { blankRequest, validateContact } from './lib/quoteModel.js'
+import { blankRequest, validateContact, totalUnits } from './lib/quoteModel.js'
 
 export default function App() {
   const [req, setReq] = useState(blankRequest)
@@ -49,7 +49,7 @@ export default function App() {
             <h1>Thanks — we&rsquo;ve got your request.</h1>
             <p>
               Our team will follow up at <strong>{req.contactEmail}</strong> with
-              pricing for your {req.vehicles.length} vehicle{req.vehicles.length === 1 ? '' : 's'}.
+              pricing for your {totalUnits(req.vehicles)} vehicle{totalUnits(req.vehicles) === 1 ? '' : 's'}.
             </p>
           </section>
         ) : (

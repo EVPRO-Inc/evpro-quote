@@ -229,6 +229,43 @@ textarea { resize: vertical; }
 .link-btn { background: none; border: none; color: var(--primary); font: inherit; font-weight: 600; cursor: pointer; }
 .notice { margin-top: 12px; font-size: 13px; color: #92400E; background: #FEF3C7; padding: 10px 12px; border-radius: var(--radius-sm); }
 
+/* ── Qty badge ───────────────────────────────────────────── */
+.qty-badge {
+  display: inline-block;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 12px; font-weight: 700;
+  padding: 2px 8px; border-radius: 999px; margin-right: 8px;
+}
+
+/* ── Review (comprehensive) ──────────────────────────────── */
+.review-block { margin-bottom: 16px; }
+.review-block-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.review-h3 { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+.count-pill { font-size: 12px; font-weight: 600; color: var(--primary); background: var(--primary-light); padding: 2px 10px; border-radius: 999px; }
+
+.rv-list { display: flex; flex-direction: column; gap: 12px; }
+.rv {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  background: var(--off-white);
+}
+.rv-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.rv-title { font-weight: 600; }
+.rv-cond { font-size: 12px; color: var(--text-muted); border: 1px solid var(--border-strong); border-radius: 999px; padding: 1px 8px; }
+
+.spec-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px 16px; }
+.spec { display: flex; flex-direction: column; }
+.spec-label { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.spec-value { font-size: 14px; }
+.rv-line { margin-top: 10px; font-size: 14px; }
+.rv-line .spec-label { margin-right: 6px; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.chip { font-size: 12px; font-weight: 500; color: var(--primary); background: var(--primary-light); border-radius: 999px; padding: 3px 10px; }
+.rv-comments { margin-top: 10px; font-size: 13px; font-style: italic; color: var(--text-muted); }
+
 /* ── Nav + success ───────────────────────────────────────── */
 .nav { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; }
 .add-vehicle { margin-top: 16px; }
