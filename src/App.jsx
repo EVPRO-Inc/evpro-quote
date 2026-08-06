@@ -4,6 +4,7 @@ import ContactStep from './components/ContactStep.jsx'
 import VehiclesStep from './components/VehiclesStep.jsx'
 import ReviewStep from './components/ReviewStep.jsx'
 import { blankRequest, validateContact, totalUnits } from './lib/quoteModel.js'
+import { submitQuote } from './lib/submitQuote.js'
 
 export default function App() {
   const [req, setReq] = useState(blankRequest)
@@ -12,6 +13,9 @@ export default function App() {
   const [contactErrors, setContactErrors] = useState({})
   const [expandedId, setExpandedId] = useState(req.vehicles[0].id)
   const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState(null)
+  const [website, setWebsite] = useState('') // honeypot — stays empty for humans
 
   const goTo = (i) => {
     setStep(i)
@@ -30,11 +34,18 @@ export default function App() {
 
   const back = () => goTo(step - 1)
 
-  const submit = () => {
-    // Phase 3 will POST this payload to the submit-quote edge function.
-    console.log('quote payload', req)
-    setSubmitted(true)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+  const submit = async () => {
+    setSubmitError(null)
+    setSubmitting(true)
+    try {
+      await submitQuote({ ...req, website })
+      setSubmitted(true)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } catch (err) {
+      setSubmitError(err.message || 'Something went wrong. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -84,14 +95,30 @@ export default function App() {
               />
             )}
 
+            {/* Honeypot — hidden from humans; bots that fill it get silently dropped. */}
+            <input
+              type="text"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+              aria-hidden="true"
+              style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }}
+            />
+
+            {submitError && step === 2 && <p className="submit-error">{submitError}</p>}
+
             <div className="nav">
               {step > 0 ? (
-                <button type="button" className="btn-secondary" onClick={back}>Back</button>
+                <button type="button" className="btn-secondary" onClick={back} disabled={submitting}>Back</button>
               ) : <span />}
               {step < 2 ? (
                 <button type="button" className="btn" onClick={next}>Continue</button>
               ) : (
-                <button type="button" className="btn" onClick={submit}>Submit request</button>
+                <button type="button" className="btn" onClick={submit} disabled={submitting}>
+                  {submitting ? 'Submitting…' : 'Submit request'}
+                </button>
               )}
             </div>
           </>

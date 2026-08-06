@@ -271,3 +271,8 @@ textarea { resize: vertical; }
 .add-vehicle { margin-top: 16px; }
 .success h1 { font-family: var(--font-display); font-size: 26px; margin-bottom: 10px; }
 .success p { color: var(--text-muted); }
+.submit-error {
+  margin-top: 16px; font-size: 14px; color: #C81E1E;
+  background: #FEECEC; border: 1px solid #F5C6C6;
+  padding: 10px 14px; border-radius: var(--radius-sm);
+}
