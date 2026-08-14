@@ -1,5 +1,7 @@
 import Field from './Field.jsx'
-import { CONDITIONS, US_STATES, OEMS, PRODUCTS, modelsFor, vehicleLabel, vehicleQty } from '../lib/quoteModel.js'
+import MakePicker from './MakePicker.jsx'
+import MakeLogo from './MakeLogo.jsx'
+import { CONDITIONS, US_STATES, PRODUCTS, modelsFor, vehicleLabel, vehicleQty } from '../lib/quoteModel.js'
 import { ChevronIcon, CopyIcon, TrashIcon, CheckIcon, PRODUCT_ICONS } from './icons.jsx'
 
 export default function VehicleCard({
@@ -8,8 +10,8 @@ export default function VehicleCard({
   const set = (key) => (e) => onChange({ ...vehicle, [key]: e.target.value })
 
   // Changing make resets the model so a stale selection can't survive.
-  const setMake = (e) =>
-    onChange({ ...vehicle, make: e.target.value, model: '', modelOther: '' })
+  const setMake = (make) =>
+    onChange({ ...vehicle, make, model: '', modelOther: '' })
 
   const qty = vehicleQty(vehicle)
   const setQty = (n) => onChange({ ...vehicle, qty: Math.max(1, n) })
@@ -24,6 +26,7 @@ export default function VehicleCard({
         <button type="button" className="vehicle-summary" onClick={onToggle} aria-expanded="false">
           <span className="vehicle-summary-main">
             {qty > 1 && <span className="qty-badge">{qty}×</span>}
+            {vehicle.make && <MakeLogo make={vehicle.make} size={22} />}
             <span className="vehicle-title">{vehicleLabel(vehicle, index)}</span>
             {vehicle.condition && vehicle.condition !== 'Either' && (
               <span className="cond-tag">{vehicle.condition}</span>
@@ -45,6 +48,7 @@ export default function VehicleCard({
     <div className="vehicle expanded">
       <div className="vehicle-head">
         <button type="button" className="vehicle-title-btn" onClick={onToggle} aria-expanded="true">
+          {vehicle.make && <MakeLogo make={vehicle.make} size={24} />}
           <span className="vehicle-title">{vehicleLabel(vehicle, index)}</span>
           <span className="chev open" aria-hidden="true"><ChevronIcon /></span>
         </button>
@@ -69,10 +73,7 @@ export default function VehicleCard({
         <span className="group-label">Vehicle</span>
         <div className="grid">
           <Field label="Make">
-            <select value={vehicle.make} onChange={setMake}>
-              <option value="">Select a make</option>
-              {OEMS.map((m) => <option key={m} value={m}>{m}</option>)}
-            </select>
+            <MakePicker value={vehicle.make} onChange={setMake} />
           </Field>
           <Field label="Model">
             {models ? (

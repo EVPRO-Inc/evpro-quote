@@ -1,3 +1,4 @@
+import MakeLogo from './MakeLogo.jsx'
 import {
   vehicleLabel, vehicleHasContent, vehicleQty, totalUnits, resolveModel, PRODUCTS,
 } from '../lib/quoteModel.js'
@@ -28,6 +29,7 @@ function ReviewVehicle({ v, index }) {
       <div className="rv-head">
         <span className="rv-title">
           {qty > 1 && <span className="qty-badge">{qty}×</span>}
+          {v.make && <MakeLogo make={v.make} size={20} />}
           {vehicleLabel(v, index)}
         </span>
         {v.condition && v.condition !== 'Either' && <span className="rv-cond">{v.condition}</span>}
