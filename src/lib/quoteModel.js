@@ -97,9 +97,9 @@ export function modelsFor(make) {
 }
 
 export const PRODUCTS = [
-  { key: 'needsVaas', label: 'Vehicle-as-a-Service' },
-  { key: 'needsCaas', label: 'Charger-as-a-Service' },
-  { key: 'needsOm', label: 'Operations & Maintenance (O&M)' },
+  { key: 'needsVaas', icon: 'car',    label: 'Vehicle-as-a-Service',        short: 'Vehicle-as-a-Service',   desc: 'The vehicle, one monthly cost' },
+  { key: 'needsCaas', icon: 'bolt',   label: 'Charger-as-a-Service',        short: 'Charger-as-a-Service',   desc: 'Charging hardware + install' },
+  { key: 'needsOm',   icon: 'wrench', label: 'Operations & Maintenance (O&M)', short: 'Operations & Maintenance', desc: 'Servicing, repairs, uptime' },
 ]
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
