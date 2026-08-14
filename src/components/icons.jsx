@@ -68,4 +68,48 @@ export function TrashIcon({ size = 16 }) {
   )
 }
 
+export function UserIcon({ size = 20 }) {
+  return (
+    <svg {...base(size)} aria-hidden="true">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+    </svg>
+  )
+}
+
+export function MailIcon({ size = 20 }) {
+  return (
+    <svg {...base(size)} aria-hidden="true">
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="M3 7l9 6 9-6" />
+    </svg>
+  )
+}
+
+export function PhoneIcon({ size = 20 }) {
+  return (
+    <svg {...base(size)} aria-hidden="true">
+      <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z" />
+    </svg>
+  )
+}
+
+export function BuildingIcon({ size = 20 }) {
+  return (
+    <svg {...base(size)} aria-hidden="true">
+      <rect x="4" y="3" width="16" height="18" rx="1.5" />
+      <path d="M9 8h.01M15 8h.01M9 12h.01M15 12h.01M10 16h4" />
+    </svg>
+  )
+}
+
+export function CircleCheckIcon({ size = 48 }) {
+  return (
+    <svg {...base(size)} strokeWidth={1.5} aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M8 12l3 3 5-6" />
+    </svg>
+  )
+}
+
 export const PRODUCT_ICONS = { car: CarIcon, bolt: BoltIcon, wrench: WrenchIcon }

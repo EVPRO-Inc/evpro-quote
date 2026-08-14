@@ -146,6 +146,11 @@ export function trimsFor(model) {
   return TRIMS_BY_MODEL[model] ?? null
 }
 
+// Swatch hex for a known color name, else null (custom/free-text colors).
+export function colorHex(name) {
+  return EXTERIOR_COLORS.find((c) => c.name === name)?.hex ?? null
+}
+
 // Annual mileage buckets (10k → 50k in 5k steps, plus 50k+).
 export const ANNUAL_MILEAGE_OPTIONS = [
   '10,000', '15,000', '20,000', '25,000', '30,000',

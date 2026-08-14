@@ -5,6 +5,7 @@ import VehiclesStep from './components/VehiclesStep.jsx'
 import ReviewStep from './components/ReviewStep.jsx'
 import { blankRequest, validateContact, totalUnits } from './lib/quoteModel.js'
 import { submitQuote } from './lib/submitQuote.js'
+import { CircleCheckIcon } from './components/icons.jsx'
 
 export default function App() {
   const [req, setReq] = useState(blankRequest)
@@ -57,6 +58,7 @@ export default function App() {
       <main className="page">
         {submitted ? (
           <section className="card success">
+            <span className="success-icon" aria-hidden="true"><CircleCheckIcon size={52} /></span>
             <h1>Thanks — we&rsquo;ve got your request.</h1>
             <p>
               Our team will follow up at <strong>{req.contactEmail}</strong> with
