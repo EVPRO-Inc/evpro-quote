@@ -1,6 +1,6 @@
 import MakeLogo from './MakeLogo.jsx'
 import {
-  vehicleLabel, vehicleHasContent, vehicleQty, totalUnits, resolveModel, PRODUCTS,
+  vehicleLabel, vehicleHasContent, vehicleQty, totalUnits, resolveTrim, PRODUCTS,
 } from '../lib/quoteModel.js'
 
 function fmtDate(iso) {
@@ -36,7 +36,7 @@ function ReviewVehicle({ v, index }) {
       </div>
       <div className="spec-grid">
         <Spec label="Exterior color" value={v.color} />
-        <Spec label="Trim" value={v.trim} />
+        <Spec label="Trim" value={resolveTrim(v)} />
         <Spec label="Max daily miles" value={v.dailyMiles} />
         <Spec label="Annual miles" value={v.annualMiles} />
         <Spec label="Target delivery" value={fmtDate(v.targetDelivery)} />

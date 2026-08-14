@@ -1,7 +1,13 @@
 import Field from './Field.jsx'
 import MakePicker from './MakePicker.jsx'
 import MakeLogo from './MakeLogo.jsx'
-import { CONDITIONS, US_STATES, PRODUCTS, modelsFor, vehicleLabel, vehicleQty } from '../lib/quoteModel.js'
+import Segmented from './Segmented.jsx'
+import ColorPicker from './ColorPicker.jsx'
+import VehicleImage from './VehicleImage.jsx'
+import {
+  CONDITIONS, US_STATES, PRODUCTS, ANNUAL_MILEAGE_OPTIONS,
+  modelsFor, trimsFor, resolveModel, vehicleLabel, vehicleQty,
+} from '../lib/quoteModel.js'
 import { ChevronIcon, CopyIcon, TrashIcon, CheckIcon, PRODUCT_ICONS } from './icons.jsx'
 
 export default function VehicleCard({
@@ -9,15 +15,23 @@ export default function VehicleCard({
 }) {
   const set = (key) => (e) => onChange({ ...vehicle, [key]: e.target.value })
 
-  // Changing make resets the model so a stale selection can't survive.
+  // Changing make/model cascades: a new make clears model+trim; a new model
+  // clears trim — stale dependent selections can't survive.
   const setMake = (make) =>
-    onChange({ ...vehicle, make, model: '', modelOther: '' })
+    onChange({ ...vehicle, make, model: '', modelOther: '', trim: '', trimOther: '' })
+  const setModel = (e) =>
+    onChange({ ...vehicle, model: e.target.value, modelOther: '', trim: '', trimOther: '' })
+  const setModelText = (e) =>
+    onChange({ ...vehicle, model: e.target.value, trim: '', trimOther: '' })
+
+  const models = modelsFor(vehicle.make)
+  const chosenModel = resolveModel(vehicle)
+  const trims = trimsFor(chosenModel)
+  const hasModel = Boolean(chosenModel)
 
   const qty = vehicleQty(vehicle)
   const setQty = (n) => onChange({ ...vehicle, qty: Math.max(1, n) })
   const toggleProduct = (key) => onChange({ ...vehicle, [key]: !vehicle[key] })
-
-  const models = modelsFor(vehicle.make)
 
   if (!expanded) {
     const chosen = PRODUCTS.filter((p) => vehicle[p.key])
@@ -68,16 +82,19 @@ export default function VehicleCard({
         </div>
       </div>
 
-      {/* Vehicle identity */}
+      {/* Vehicle — identity + details together, right under the header */}
       <div className="vsection">
         <span className="group-label">Vehicle</span>
+
+        <VehicleImage vehicle={vehicle} />
+
         <div className="grid">
           <Field label="Make">
             <MakePicker value={vehicle.make} onChange={setMake} />
           </Field>
           <Field label="Model">
             {models ? (
-              <select value={vehicle.model} onChange={set('model')}>
+              <select value={vehicle.model} onChange={setModel}>
                 <option value="">Select a model</option>
                 {models.map((m) => <option key={m} value={m}>{m}</option>)}
                 <option value="Other">Other</option>
@@ -85,26 +102,55 @@ export default function VehicleCard({
             ) : (
               <input
                 value={vehicle.model}
-                onChange={set('model')}
+                onChange={setModelText}
                 disabled={!vehicle.make}
                 placeholder={vehicle.make ? '' : 'Select a make first'}
               />
             )}
           </Field>
-          <Field label="New / used">
-            <select value={vehicle.condition} onChange={set('condition')}>
-              {CONDITIONS.map((c) => <option key={c} value={c}>{c}</option>)}
-            </select>
+          <Field label="Trim">
+            {trims ? (
+              <select value={vehicle.trim} onChange={set('trim')}>
+                <option value="">Select a trim</option>
+                {trims.map((t) => <option key={t} value={t}>{t}</option>)}
+                <option value="Other">Other</option>
+              </select>
+            ) : (
+              <input
+                value={vehicle.trim}
+                onChange={set('trim')}
+                disabled={!hasModel}
+                placeholder={hasModel ? '' : 'Pick a model first'}
+              />
+            )}
           </Field>
         </div>
 
         {vehicle.model === 'Other' && (
-          <div className="grid" style={{ marginTop: 14 }}>
-            <Field label="Model (type it in)" className="col-full">
-              <input value={vehicle.modelOther} onChange={set('modelOther')} autoFocus />
-            </Field>
-          </div>
+          <Field label="Model (type it in)" className="mt">
+            <input value={vehicle.modelOther} onChange={set('modelOther')} autoFocus />
+          </Field>
         )}
+        {vehicle.trim === 'Other' && (
+          <Field label="Trim (type it in)" className="mt">
+            <input value={vehicle.trimOther} onChange={set('trimOther')} autoFocus />
+          </Field>
+        )}
+
+        <div className="cond-row">
+          <span className="field-label">New / used</span>
+          <Segmented
+            options={CONDITIONS}
+            value={vehicle.condition}
+            onChange={(v) => onChange({ ...vehicle, condition: v })}
+            ariaLabel="New or used"
+          />
+        </div>
+
+        <div className="mt">
+          <span className="field-label">Exterior color</span>
+          <ColorPicker value={vehicle.color} onChange={(c) => onChange({ ...vehicle, color: c })} />
+        </div>
 
         {/* Quantity — prominent stepper */}
         <div className="qty-control">
@@ -136,23 +182,13 @@ export default function VehicleCard({
             <input value={vehicle.dailyMiles} onChange={set('dailyMiles')} inputMode="numeric" />
           </Field>
           <Field label="Annual miles">
-            <input value={vehicle.annualMiles} onChange={set('annualMiles')} inputMode="numeric" />
+            <select value={vehicle.annualMiles} onChange={set('annualMiles')}>
+              <option value="">Select</option>
+              {ANNUAL_MILEAGE_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+            </select>
           </Field>
           <Field label="Target delivery">
             <input type="date" value={vehicle.targetDelivery} onChange={set('targetDelivery')} />
-          </Field>
-        </div>
-      </div>
-
-      {/* Appearance */}
-      <div className="vsection">
-        <span className="group-label">Details</span>
-        <div className="grid">
-          <Field label="Exterior color">
-            <input value={vehicle.color} onChange={set('color')} />
-          </Field>
-          <Field label="Trim">
-            <input value={vehicle.trim} onChange={set('trim')} />
           </Field>
         </div>
       </div>

@@ -15,6 +15,7 @@ export function blankVehicle() {
     condition: 'Either',
     color: '',
     trim: '',
+    trimOther: '',
     dailyMiles: '',
     annualMiles: '',
     targetDelivery: '',
@@ -45,7 +46,7 @@ export function duplicateVehicle(v) {
   return { ...v, id: nextId() }
 }
 
-export const CONDITIONS = ['Either', 'New', 'Used']
+export const CONDITIONS = ['New', 'Used', 'Either']
 
 export const US_STATES = [
   'AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA',
@@ -96,6 +97,78 @@ export function modelsFor(make) {
   return MODELS_BY_MAKE[make] ?? null
 }
 
+// Trim options per model (EV / fleet-relevant). Models without an entry fall
+// back to a free-text trim field.
+export const TRIMS_BY_MODEL = {
+  Lyriq: ['Tech', 'Luxury', 'Sport', 'Premium Luxury'],
+  Optiq: ['Luxury', 'Sport'],
+  'Escalade IQ': ['Luxury', 'Sport'],
+  'Model 3': ['Standard', 'Long Range', 'Performance'],
+  'Model Y': ['Long Range', 'Performance'],
+  'Model S': ['All-Wheel Drive', 'Plaid'],
+  'Model X': ['All-Wheel Drive', 'Plaid'],
+  Cybertruck: ['All-Wheel Drive', 'Cyberbeast'],
+  'Mustang Mach-E': ['Select', 'Premium', 'GT', 'Rally'],
+  'F-150 Lightning': ['Pro', 'XLT', 'Lariat', 'Platinum'],
+  'E-Transit': ['Cargo Van', 'Chassis Cab'],
+  'Ioniq 5': ['SE', 'SEL', 'Limited'],
+  'Ioniq 6': ['SE', 'SEL', 'Limited'],
+  EV6: ['Light', 'Wind', 'GT-Line', 'GT'],
+  EV9: ['Light', 'Wind', 'Land', 'GT-Line'],
+  'Blazer EV': ['LT', 'RS', 'SS'],
+  'Equinox EV': ['LT', 'RS'],
+  'Silverado EV': ['WT', 'RST'],
+  i4: ['eDrive35', 'eDrive40', 'xDrive40', 'M50'],
+  i5: ['eDrive40', 'xDrive40', 'M60'],
+  iX: ['xDrive50', 'M60'],
+  'Q4 e-tron': ['Premium', 'Premium Plus', 'Prestige'],
+  'Q6 e-tron': ['Premium', 'Premium Plus', 'Prestige'],
+  'ID.4': ['Standard', 'Pro', 'Pro S'],
+  'ID.Buzz': ['Pro S', '1st Edition'],
+  Ariya: ['Engage', 'Venture+', 'Evolve+', 'Platinum+'],
+  Leaf: ['S', 'SV Plus'],
+  EX30: ['Core', 'Plus', 'Ultra'],
+  EX90: ['Plus', 'Ultra'],
+  'Polestar 2': ['Standard Range', 'Long Range'],
+  'Polestar 3': ['Long Range', 'Performance'],
+  Taycan: ['Base', '4S', 'Turbo', 'Turbo S'],
+  'Macan Electric': ['Base', '4', 'Turbo'],
+  Air: ['Pure', 'Touring', 'Grand Touring'],
+  Gravity: ['Touring', 'Grand Touring'],
+  'R1T': ['Adventure', 'Ascend'],
+  'R1S': ['Adventure', 'Ascend'],
+  bZ4X: ['XLE', 'Limited'],
+  Solterra: ['Premium', 'Limited'],
+  GV60: ['Standard', 'Advanced', 'Performance'],
+}
+
+export function trimsFor(model) {
+  return TRIMS_BY_MODEL[model] ?? null
+}
+
+// Annual mileage buckets (10k → 50k in 5k steps, plus 50k+).
+export const ANNUAL_MILEAGE_OPTIONS = [
+  '10,000', '15,000', '20,000', '25,000', '30,000',
+  '35,000', '40,000', '45,000', '50,000', '50,000+',
+]
+
+// Common exterior colors with swatch hexes. `border` flags near-white swatches
+// that need an outline to be visible.
+export const EXTERIOR_COLORS = [
+  { name: 'Black', hex: '#0C0C0E' },
+  { name: 'White', hex: '#F3F4F6', border: true },
+  { name: 'Silver', hex: '#C4C8CD' },
+  { name: 'Gray', hex: '#6C7075' },
+  { name: 'Blue', hex: '#26467F' },
+  { name: 'Dark Blue', hex: '#182740' },
+  { name: 'Red', hex: '#B01E28' },
+  { name: 'Green', hex: '#264F39' },
+  { name: 'Beige', hex: '#CCBD9C' },
+  { name: 'Brown', hex: '#59452F' },
+  { name: 'Gold', hex: '#B4924F' },
+  { name: 'Orange', hex: '#D2662A' },
+]
+
 export const PRODUCTS = [
   { key: 'needsVaas', icon: 'car',    label: 'Vehicle-as-a-Service',        short: 'Vehicle-as-a-Service',   desc: 'The vehicle, one monthly cost' },
   { key: 'needsCaas', icon: 'bolt',   label: 'Charger-as-a-Service',        short: 'Charger-as-a-Service',   desc: 'Charging hardware + install' },
@@ -122,6 +195,11 @@ export function vehicleHasContent(v) {
 // The effective model string, resolving the free-text override.
 export function resolveModel(v) {
   return v.model === 'Other' ? v.modelOther : v.model
+}
+
+// The effective trim string, resolving the free-text override.
+export function resolveTrim(v) {
+  return v.trim === 'Other' ? v.trimOther : v.trim
 }
 
 export function vehicleQty(v) {

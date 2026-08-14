@@ -51,6 +51,9 @@ function qty(v: Record<string, unknown>): number {
 function modelOf(v: Record<string, unknown>): string {
   return s(v.model) === 'Other' ? s(v.modelOther) : s(v.model)
 }
+function trimOf(v: Record<string, unknown>): string {
+  return s(v.trim) === 'Other' ? s(v.trimOther) : s(v.trim)
+}
 function fmtDate(iso: string): string {
   const [y, m, d] = iso.split('-')
   return y && m && d ? `${m}/${d}/${y}` : iso
@@ -72,7 +75,7 @@ function renderVehicleHtml(v: Record<string, unknown>, i: number): string {
   const add = (label: string, val: string) => { if (val) specs.push(`<b>${label}:</b> ${esc(val)}`) }
   if (s(v.condition) && s(v.condition) !== 'Either') add('Condition', s(v.condition))
   add('Color', s(v.color))
-  add('Trim', s(v.trim))
+  add('Trim', trimOf(v))
   add('Max daily miles', s(v.dailyMiles))
   add('Annual miles', s(v.annualMiles))
   if (s(v.targetDelivery)) add('Target delivery', fmtDate(s(v.targetDelivery)))
