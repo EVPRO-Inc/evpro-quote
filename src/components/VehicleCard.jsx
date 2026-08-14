@@ -3,7 +3,6 @@ import MakePicker from './MakePicker.jsx'
 import MakeLogo from './MakeLogo.jsx'
 import Segmented from './Segmented.jsx'
 import ColorPicker from './ColorPicker.jsx'
-import VehicleImage from './VehicleImage.jsx'
 import {
   CONDITIONS, US_STATES, PRODUCTS, ANNUAL_MILEAGE_OPTIONS,
   modelsFor, trimsFor, resolveModel, vehicleLabel, vehicleQty,
@@ -85,8 +84,6 @@ export default function VehicleCard({
       {/* Vehicle — identity + details together, right under the header */}
       <div className="vsection">
         <span className="group-label">Vehicle</span>
-
-        <VehicleImage vehicle={vehicle} />
 
         <div className="grid">
           <Field label="Make">

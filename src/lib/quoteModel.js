@@ -152,21 +152,24 @@ export const ANNUAL_MILEAGE_OPTIONS = [
   '35,000', '40,000', '45,000', '50,000', '50,000+',
 ]
 
-// Common exterior colors with swatch hexes. `border` flags near-white swatches
-// that need an outline to be visible.
+// Common exterior colors with paint-accurate swatch hexes (approximating real
+// automotive finishes). This is a universal palette — the same options for
+// every vehicle. `border` flags near-white swatches that need an outline.
 export const EXTERIOR_COLORS = [
-  { name: 'Black', hex: '#0C0C0E' },
-  { name: 'White', hex: '#F3F4F6', border: true },
-  { name: 'Silver', hex: '#C4C8CD' },
-  { name: 'Gray', hex: '#6C7075' },
-  { name: 'Blue', hex: '#26467F' },
-  { name: 'Dark Blue', hex: '#182740' },
-  { name: 'Red', hex: '#B01E28' },
-  { name: 'Green', hex: '#264F39' },
-  { name: 'Beige', hex: '#CCBD9C' },
-  { name: 'Brown', hex: '#59452F' },
-  { name: 'Gold', hex: '#B4924F' },
-  { name: 'Orange', hex: '#D2662A' },
+  { name: 'Black', hex: '#141519' },
+  { name: 'White', hex: '#EDEFF2', border: true },
+  { name: 'Silver', hex: '#C6CACF' },
+  { name: 'Gray', hex: '#7C8186' },
+  { name: 'Gunmetal', hex: '#3A3E45' },
+  { name: 'Blue', hex: '#1F3E73' },
+  { name: 'Light Blue', hex: '#6E93BE' },
+  { name: 'Red', hex: '#A21F26' },
+  { name: 'Green', hex: '#2A4A37' },
+  { name: 'Beige', hex: '#C9BA98' },
+  { name: 'Brown', hex: '#4E3A29' },
+  { name: 'Bronze', hex: '#8F7143' },
+  { name: 'Orange', hex: '#C55A28' },
+  { name: 'Yellow', hex: '#E6B92E' },
 ]
 
 export const PRODUCTS = [

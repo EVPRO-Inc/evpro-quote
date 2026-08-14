@@ -37,6 +37,10 @@ export default function VehiclesStep({ vehicles, expandedId, onChange, setExpand
         <h2 className="step-heading">One card per vehicle type</h2>
         <span className="count">{units} vehicle{units === 1 ? '' : 's'} total</span>
       </div>
+      <p className="step-help">
+        Set <b>Quantity</b> for several of the same vehicle at one location, or{' '}
+        <b>Duplicate</b> a card to reuse the details and change just what differs.
+      </p>
 
       <div className="vehicle-list">
         {vehicles.map((v, i) => (

@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { EXTERIOR_COLORS } from '../lib/quoteModel.js'
+import { CheckIcon } from './icons.jsx'
 
-// Visual exterior-color picker: clickable swatches plus an "Other" free-text
+// Visual exterior-color picker: glossy paint swatches plus an "Other" free-text
 // escape hatch. The stored value is always a real color name or free text —
 // "Other" mode is tracked locally so nothing sentinel-shaped leaks out.
 export default function ColorPicker({ value, onChange }) {
@@ -27,13 +28,14 @@ export default function ColorPicker({ value, onChange }) {
             <button
               key={c.name}
               type="button"
-              className={`swatch${on ? ' on' : ''}${c.border ? ' bordered' : ''}`}
-              style={{ '--sw': c.hex }}
+              className={`swatch${on ? ' on' : ''}`}
               onClick={() => pickSwatch(c.name)}
               aria-pressed={on}
               title={c.name}
             >
-              <span className="swatch-dot" />
+              <span className={`swatch-dot${c.border ? ' bordered' : ''}`} style={{ '--sw': c.hex }}>
+                {on && <span className="swatch-check"><CheckIcon size={14} /></span>}
+              </span>
               <span className="swatch-name">{c.name}</span>
             </button>
           )
@@ -44,7 +46,9 @@ export default function ColorPicker({ value, onChange }) {
           onClick={pickOther}
           aria-pressed={isOther}
         >
-          <span className="swatch-dot swatch-other-dot" />
+          <span className="swatch-dot swatch-other-dot">
+            {isOther && <span className="swatch-check"><CheckIcon size={14} /></span>}
+          </span>
           <span className="swatch-name">Other</span>
         </button>
       </div>
