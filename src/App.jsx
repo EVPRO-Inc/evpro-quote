@@ -54,7 +54,7 @@ export default function App() {
       <header className="site-header">
         <div className="inner">
           <span className="brand-lockup">
-            <img src="/logo.png" className="brand-logo" alt="EV.PRO" width="112" height="36" />
+            <img src={`${import.meta.env.BASE_URL}logo.png`} className="brand-logo" alt="EV.PRO" width="112" height="36" />
           </span>
           <span className="header-tag">Fleet electrification, simplified.</span>
         </div>
