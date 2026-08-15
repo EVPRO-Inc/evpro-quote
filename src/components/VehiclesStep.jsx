@@ -1,7 +1,7 @@
 import VehicleCard from './VehicleCard.jsx'
 import { blankVehicle, duplicateVehicle, totalUnits } from '../lib/quoteModel.js'
 
-export default function VehiclesStep({ vehicles, expandedId, onChange, setExpandedId }) {
+export default function VehiclesStep({ vehicles, expandedId, showErrors, onChange, setExpandedId }) {
   const update = (next) => onChange(next)
 
   const changeVehicle = (v) =>
@@ -50,6 +50,7 @@ export default function VehiclesStep({ vehicles, expandedId, onChange, setExpand
             index={i}
             expanded={expandedId === v.id}
             canRemove={vehicles.length > 1}
+            showErrors={showErrors}
             onToggle={() => toggle(v.id)}
             onChange={changeVehicle}
             onDuplicate={() => dupVehicle(v)}

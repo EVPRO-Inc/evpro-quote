@@ -3,7 +3,7 @@ import Stepper from './components/Stepper.jsx'
 import ContactStep from './components/ContactStep.jsx'
 import VehiclesStep from './components/VehiclesStep.jsx'
 import ReviewStep from './components/ReviewStep.jsx'
-import { blankRequest, validateContact, totalUnits } from './lib/quoteModel.js'
+import { blankRequest, validateContact, vehiclesValid, validateVehicle, totalUnits } from './lib/quoteModel.js'
 import { submitQuote } from './lib/submitQuote.js'
 import { CircleCheckIcon, CheckIcon } from './components/icons.jsx'
 
@@ -12,6 +12,7 @@ export default function App() {
   const [step, setStep] = useState(0)
   const [maxReached, setMaxReached] = useState(0)
   const [contactErrors, setContactErrors] = useState({})
+  const [vehiclesAttempted, setVehiclesAttempted] = useState(false)
   const [expandedId, setExpandedId] = useState(req.vehicles[0].id)
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -29,6 +30,14 @@ export default function App() {
       const errs = validateContact(req)
       setContactErrors(errs)
       if (Object.keys(errs).length) return
+    }
+    if (step === 1) {
+      setVehiclesAttempted(true)
+      if (!vehiclesValid(req.vehicles)) {
+        const firstBad = req.vehicles.find((v) => Object.keys(validateVehicle(v)).length)
+        if (firstBad) setExpandedId(firstBad.id)
+        return
+      }
     }
     goTo(step + 1)
   }
@@ -97,6 +106,7 @@ export default function App() {
                 <VehiclesStep
                   vehicles={req.vehicles}
                   expandedId={expandedId}
+                  showErrors={vehiclesAttempted}
                   setExpandedId={setExpandedId}
                   onChange={(vehicles) => setReq({ ...req, vehicles })}
                 />

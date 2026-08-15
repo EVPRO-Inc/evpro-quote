@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import Field from './Field.jsx'
 import MakePicker from './MakePicker.jsx'
 import MakeLogo from './MakeLogo.jsx'
@@ -6,12 +5,12 @@ import Segmented from './Segmented.jsx'
 import ColorPicker from './ColorPicker.jsx'
 import {
   CONDITIONS, US_STATES, PRODUCTS, ANNUAL_MILEAGE_OPTIONS,
-  modelsFor, trimsFor, resolveModel, vehicleLabel, vehicleQty,
+  modelsFor, trimsFor, resolveModel, vehicleLabel, vehicleQty, validateVehicle,
 } from '../lib/quoteModel.js'
 import { ChevronIcon, CopyIcon, TrashIcon, CheckIcon, PRODUCT_ICONS } from './icons.jsx'
 
 export default function VehicleCard({
-  vehicle, index, expanded, canRemove, onToggle, onChange, onDuplicate, onRemove,
+  vehicle, index, expanded, canRemove, showErrors, onToggle, onChange, onDuplicate, onRemove,
 }) {
   const set = (key) => (e) => onChange({ ...vehicle, [key]: e.target.value })
 
@@ -31,15 +30,13 @@ export default function VehicleCard({
   const setQty = (n) => onChange({ ...vehicle, qty: Math.max(1, n) })
   const toggleProduct = (key) => onChange({ ...vehicle, [key]: !vehicle[key] })
 
-  const hasMore = Boolean(
-    vehicle.color || vehicle.dailyMiles || vehicle.annualMiles || vehicle.targetDelivery || vehicle.comments,
-  )
-  const [showMore, setShowMore] = useState(hasMore)
+  const errors = showErrors ? validateVehicle(vehicle) : {}
 
   if (!expanded) {
     const chosen = PRODUCTS.filter((p) => vehicle[p.key])
+    const incomplete = showErrors && Object.keys(validateVehicle(vehicle)).length > 0
     return (
-      <div className="vehicle collapsed">
+      <div className={`vehicle collapsed${incomplete ? ' has-error' : ''}`}>
         <button type="button" className="vehicle-summary" onClick={onToggle} aria-expanded="false">
           <span className="vehicle-summary-main">
             {qty > 1 && <span className="qty-badge">{qty}×</span>}
@@ -48,6 +45,7 @@ export default function VehicleCard({
             {vehicle.condition && vehicle.condition !== 'Either' && (
               <span className="cond-tag">{vehicle.condition}</span>
             )}
+            {incomplete && <span className="incomplete-tag">Incomplete</span>}
           </span>
           <span className="vehicle-summary-right">
             {chosen.map((p) => {
@@ -99,12 +97,12 @@ export default function VehicleCard({
         </div>
       </div>
 
-      {/* Essentials */}
-      <div className="grid">
-        <Field label="Make">
+      {/* Identity — make / model / trim / new-used on one row */}
+      <div className="grid grid-4">
+        <Field label="Make" required error={errors.make}>
           <MakePicker value={vehicle.make} onChange={setMake} />
         </Field>
-        <Field label="Model">
+        <Field label="Model" required error={errors.model}>
           {models ? (
             <select value={vehicle.model} onChange={setModel}>
               <option value="">Select a model</option>
@@ -120,7 +118,7 @@ export default function VehicleCard({
             />
           )}
         </Field>
-        <Field label="Trim">
+        <Field label="Trim" required error={errors.trim}>
           {trims ? (
             <select value={vehicle.trim} onChange={set('trim')}>
               <option value="">Select a trim</option>
@@ -136,6 +134,15 @@ export default function VehicleCard({
             />
           )}
         </Field>
+        <Field label="New / used">
+          <Segmented
+            fill
+            options={CONDITIONS}
+            value={vehicle.condition}
+            onChange={(v) => onChange({ ...vehicle, condition: v })}
+            ariaLabel="New or used"
+          />
+        </Field>
       </div>
 
       {vehicle.model === 'Other' && (
@@ -149,37 +156,48 @@ export default function VehicleCard({
         </Field>
       )}
 
-      <div className="cond-row">
-        <span className="field-label">New / used</span>
-        <Segmented
-          options={CONDITIONS}
-          value={vehicle.condition}
-          onChange={(v) => onChange({ ...vehicle, condition: v })}
-          ariaLabel="New or used"
-        />
+      {/* Color + usage */}
+      <div className="vsection">
+        <span className="field-label">Exterior color{errors.color && <span className="req"> *</span>}</span>
+        <ColorPicker value={vehicle.color} onChange={(c) => onChange({ ...vehicle, color: c })} />
+        {errors.color && <span className="field-error block">{errors.color}</span>}
+        <div className="grid mt">
+          <Field label="Max daily miles" required error={errors.dailyMiles}>
+            <input value={vehicle.dailyMiles} onChange={set('dailyMiles')} inputMode="numeric" />
+          </Field>
+          <Field label="Annual miles" required error={errors.annualMiles}>
+            <select value={vehicle.annualMiles} onChange={set('annualMiles')}>
+              <option value="">Select</option>
+              {ANNUAL_MILEAGE_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </Field>
+          <Field label="Target delivery" required error={errors.targetDelivery}>
+            <input type="date" value={vehicle.targetDelivery} onChange={set('targetDelivery')} />
+          </Field>
+        </div>
       </div>
 
       {/* Garaging */}
       <div className="vsection">
         <span className="group-label">Garaging address</span>
         <div className="grid">
-          <Field label="Street address" className="col-2">
+          <Field label="Street address" className="col-2" required error={errors.garagingAddress}>
             <input value={vehicle.garagingAddress} onChange={set('garagingAddress')} />
           </Field>
-          <Field label="City"><input value={vehicle.city} onChange={set('city')} /></Field>
-          <Field label="State">
+          <Field label="City" required error={errors.city}><input value={vehicle.city} onChange={set('city')} /></Field>
+          <Field label="State" required error={errors.state}>
             <select value={vehicle.state} onChange={set('state')}>
               <option value="">—</option>
               {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           </Field>
-          <Field label="ZIP"><input value={vehicle.zip} onChange={set('zip')} inputMode="numeric" /></Field>
+          <Field label="ZIP" required error={errors.zip}><input value={vehicle.zip} onChange={set('zip')} inputMode="numeric" /></Field>
         </div>
       </div>
 
       {/* Products */}
       <div className="vsection">
-        <span className="group-label">Products needed</span>
+        <span className="group-label">Products needed{errors.products && <span className="req"> *</span>}</span>
         <div className="product-grid">
           {PRODUCTS.map((p) => {
             const I = PRODUCT_ICONS[p.icon]
@@ -200,45 +218,14 @@ export default function VehicleCard({
             )
           })}
         </div>
+        {errors.products && <span className="field-error block">{errors.products}</span>}
       </div>
 
-      {/* Optional extras — collapsed by default to keep the card light */}
-      <div className="more-block">
-        <button
-          type="button"
-          className={`more-toggle${showMore ? ' open' : ''}`}
-          onClick={() => setShowMore((s) => !s)}
-          aria-expanded={showMore}
-        >
-          <ChevronIcon size={16} />
-          {showMore ? 'Hide extra details' : 'More details (color, mileage, delivery)'}
-        </button>
-
-        {showMore && (
-          <div className="more-panel">
-            <div>
-              <span className="field-label">Exterior color</span>
-              <ColorPicker value={vehicle.color} onChange={(c) => onChange({ ...vehicle, color: c })} />
-            </div>
-            <div className="grid mt">
-              <Field label="Max daily miles">
-                <input value={vehicle.dailyMiles} onChange={set('dailyMiles')} inputMode="numeric" />
-              </Field>
-              <Field label="Annual miles">
-                <select value={vehicle.annualMiles} onChange={set('annualMiles')}>
-                  <option value="">Select</option>
-                  {ANNUAL_MILEAGE_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
-                </select>
-              </Field>
-              <Field label="Target delivery">
-                <input type="date" value={vehicle.targetDelivery} onChange={set('targetDelivery')} />
-              </Field>
-            </div>
-            <Field label="Other comments (uplifting needs, etc.)" className="col-full mt">
-              <textarea rows={2} value={vehicle.comments} onChange={set('comments')} />
-            </Field>
-          </div>
-        )}
+      {/* Comments — the only optional field */}
+      <div className="vsection">
+        <Field label="Other comments (optional)" className="col-full">
+          <textarea rows={2} value={vehicle.comments} onChange={set('comments')} placeholder="Uplifting needs, special requests, etc." />
+        </Field>
       </div>
     </div>
   )

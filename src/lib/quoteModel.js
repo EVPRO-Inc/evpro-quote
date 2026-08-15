@@ -200,6 +200,29 @@ export function vehicleHasContent(v) {
   return Boolean(v.make.trim() || resolveModel(v).trim())
 }
 
+// Everything on a vehicle is required except comments. Returns a field->message
+// map (empty when the vehicle is complete).
+export function validateVehicle(v) {
+  const e = {}
+  if (!v.make.trim()) e.make = 'Required'
+  if (!resolveModel(v).trim()) e.model = 'Required'
+  if (!resolveTrim(v).trim()) e.trim = 'Required'
+  if (!v.color.trim()) e.color = 'Required'
+  if (!String(v.dailyMiles).trim()) e.dailyMiles = 'Required'
+  if (!v.annualMiles.trim()) e.annualMiles = 'Required'
+  if (!v.targetDelivery.trim()) e.targetDelivery = 'Required'
+  if (!v.garagingAddress.trim()) e.garagingAddress = 'Required'
+  if (!v.city.trim()) e.city = 'Required'
+  if (!v.state.trim()) e.state = 'Required'
+  if (!v.zip.trim()) e.zip = 'Required'
+  if (!(v.needsVaas || v.needsCaas || v.needsOm)) e.products = 'Pick at least one product'
+  return e
+}
+
+export function vehiclesValid(vehicles) {
+  return vehicles.every((v) => Object.keys(validateVehicle(v)).length === 0)
+}
+
 // The effective model string, resolving the free-text override.
 export function resolveModel(v) {
   return v.model === 'Other' ? v.modelOther : v.model

@@ -203,6 +203,9 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { outline: non
 }
 .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @media (max-width: 560px) { .grid-2 { grid-template-columns: 1fr; } }
+.grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 720px) { .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 460px) { .grid-4 { grid-template-columns: 1fr; } }
 
 /* Input with a leading icon */
 .input-icon { position: relative; }
@@ -218,6 +221,10 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { outline: non
 .field-label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
 .req { color: var(--primary); }
 .field-error { font-size: 12px; color: #C81E1E; }
+.field-error.block { display: block; margin-top: 6px; }
+.cond-tag { font-size: 12px; color: var(--text-muted); border: 1px solid var(--border-strong); border-radius: 999px; padding: 1px 8px; }
+.incomplete-tag { font-size: 11px; font-weight: 600; color: #92400E; background: #FEF3C7; padding: 2px 9px; border-radius: 999px; }
+.vehicle.collapsed.has-error { border-color: #F1B0B0; }
 
 input, select, textarea {
   font: inherit;
@@ -317,6 +324,8 @@ textarea { resize: vertical; }
 }
 .seg.on { background: var(--white); color: var(--primary); box-shadow: 0 1px 2px rgba(16, 24, 40, 0.1); }
 .seg:hover:not(.on) { color: var(--text); }
+.segmented.fill { display: flex; width: 100%; }
+.segmented.fill .seg { flex: 1; padding: 8px 6px; text-align: center; font-size: 13px; }
 
 /* Color swatch picker — glossy paint dots */
 .swatches { display: flex; flex-wrap: wrap; gap: 16px 12px; }
@@ -357,20 +366,21 @@ textarea { resize: vertical; }
 /* Compact quantity stepper (lives in the card header) */
 .qty-mini {
   display: inline-flex; align-items: center; gap: 2px;
-  border: 1px solid var(--border); border-radius: 999px; padding: 2px 4px 2px 10px;
-  background: var(--white);
+  border: 1px solid #B9C2FB; border-radius: 999px; padding: 2px 4px 2px 10px;
+  background: var(--primary-light);
 }
-.qty-mini-label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-right: 4px; }
+.qty-mini-label { font-size: 12px; font-weight: 700; color: var(--primary); margin-right: 4px; letter-spacing: .02em; }
 .qty-mini-btn {
   width: 26px; height: 26px; border: none; background: none; cursor: pointer;
   font-size: 18px; font-weight: 500; color: var(--primary); border-radius: 50%;
   display: flex; align-items: center; justify-content: center; transition: background .12s ease;
 }
-.qty-mini-btn:hover:not(:disabled) { background: var(--primary-light); }
+.qty-mini-btn:hover:not(:disabled) { background: var(--white); }
 .qty-mini-btn:disabled { color: var(--border-strong); cursor: default; }
 .qty-mini-input {
   width: 34px; height: 26px; text-align: center; padding: 0;
-  border: none; border-radius: 0; font-size: 14px; font-weight: 600;
+  border: none; border-radius: 0; font-size: 14px; font-weight: 700; color: var(--primary);
+  background: transparent;
   -moz-appearance: textfield;
 }
 .qty-mini-input::-webkit-outer-spin-button, .qty-mini-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
