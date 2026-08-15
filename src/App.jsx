@@ -5,7 +5,7 @@ import VehiclesStep from './components/VehiclesStep.jsx'
 import ReviewStep from './components/ReviewStep.jsx'
 import { blankRequest, validateContact, totalUnits } from './lib/quoteModel.js'
 import { submitQuote } from './lib/submitQuote.js'
-import { CircleCheckIcon } from './components/icons.jsx'
+import { CircleCheckIcon, CheckIcon } from './components/icons.jsx'
 
 export default function App() {
   const [req, setReq] = useState(blankRequest)
@@ -52,7 +52,16 @@ export default function App() {
   return (
     <>
       <header className="site-header">
-        <div className="inner"><span className="brand">EV.PRO</span></div>
+        <div className="inner">
+          <span className="brand-lockup">
+            <svg className="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+              <rect width="32" height="32" rx="7" fill="#0021F8" />
+              <path d="M9 9h14v3.4H12.6v3.1h9.2v3.3h-9.2v3.2H23V25H9z" fill="#fff" />
+            </svg>
+            <span className="brand">EV.PRO</span>
+          </span>
+          <span className="header-tag">Fleet electrification, simplified.</span>
+        </div>
       </header>
 
       <main className="page">
@@ -68,34 +77,42 @@ export default function App() {
         ) : (
           <>
             <section className="hero">
+              <span className="eyebrow">Fleet quote</span>
               <h1>Request a fleet quote</h1>
               <p>
                 Tell us about your company and the vehicles you need. Add one card
                 per vehicle — we&rsquo;ll follow up with pricing for Vehicle-as-a-Service
                 and Charger-as-a-Service.
               </p>
+              <ul className="trust-bar">
+                <li><CheckIcon size={15} /> Zero down</li>
+                <li><CheckIcon size={15} /> One monthly cost</li>
+                <li><CheckIcon size={15} /> 95% uptime</li>
+              </ul>
             </section>
 
             <Stepper current={step} maxReached={maxReached} onJump={goTo} />
 
-            {step === 0 && (
-              <ContactStep req={req} errors={contactErrors} onChange={setReq} />
-            )}
-            {step === 1 && (
-              <VehiclesStep
-                vehicles={req.vehicles}
-                expandedId={expandedId}
-                setExpandedId={setExpandedId}
-                onChange={(vehicles) => setReq({ ...req, vehicles })}
-              />
-            )}
-            {step === 2 && (
-              <ReviewStep
-                req={req}
-                onEditContact={() => goTo(0)}
-                onEditVehicles={() => goTo(1)}
-              />
-            )}
+            <div className="step-anim" key={step}>
+              {step === 0 && (
+                <ContactStep req={req} errors={contactErrors} onChange={setReq} />
+              )}
+              {step === 1 && (
+                <VehiclesStep
+                  vehicles={req.vehicles}
+                  expandedId={expandedId}
+                  setExpandedId={setExpandedId}
+                  onChange={(vehicles) => setReq({ ...req, vehicles })}
+                />
+              )}
+              {step === 2 && (
+                <ReviewStep
+                  req={req}
+                  onEditContact={() => goTo(0)}
+                  onEditVehicles={() => goTo(1)}
+                />
+              )}
+            </div>
 
             {/* Honeypot — hidden from humans; bots that fill it get silently dropped. */}
             <input
@@ -116,7 +133,9 @@ export default function App() {
                 <button type="button" className="btn-secondary" onClick={back} disabled={submitting}>Back</button>
               ) : <span />}
               {step < 2 ? (
-                <button type="button" className="btn" onClick={next}>Continue</button>
+                <button type="button" className="btn" onClick={next}>
+                  Continue <span className="btn-arrow" aria-hidden="true">→</span>
+                </button>
               ) : (
                 <button type="button" className="btn" onClick={submit} disabled={submitting}>
                   {submitting ? 'Submitting…' : 'Submit request'}
@@ -126,6 +145,13 @@ export default function App() {
           </>
         )}
       </main>
+
+      <footer className="site-footer">
+        <div className="inner">
+          <span>© 2026 EV.PRO</span>
+          <span className="foot-tag">Fleet electrification, simplified.</span>
+        </div>
+      </footer>
     </>
   )
 }
