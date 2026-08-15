@@ -55,15 +55,8 @@ a { color: var(--primary); }
   align-items: center;
   justify-content: space-between;
 }
-.brand-lockup { display: inline-flex; align-items: center; gap: 10px; }
-.brand-mark { width: 28px; height: 28px; border-radius: 7px; display: block; }
-.brand {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 21px;
-  letter-spacing: -0.01em;
-  color: var(--brand-blue);
-}
+.brand-lockup { display: inline-flex; align-items: center; }
+.brand-logo { height: 30px; width: auto; display: block; }
 .header-tag { font-size: 14px; color: var(--text-muted); }
 @media (max-width: 560px) { .header-tag { display: none; } }
 

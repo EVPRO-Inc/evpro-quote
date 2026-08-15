@@ -54,11 +54,7 @@ export default function App() {
       <header className="site-header">
         <div className="inner">
           <span className="brand-lockup">
-            <svg className="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
-              <rect width="32" height="32" rx="7" fill="#0021F8" />
-              <path d="M9 9h14v3.4H12.6v3.1h9.2v3.3h-9.2v3.2H23V25H9z" fill="#fff" />
-            </svg>
-            <span className="brand">EV.PRO</span>
+            <img src="/logo.png" className="brand-logo" alt="EV.PRO" width="112" height="36" />
           </span>
           <span className="header-tag">Fleet electrification, simplified.</span>
         </div>
