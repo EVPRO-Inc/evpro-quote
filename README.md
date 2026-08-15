@@ -21,6 +21,13 @@ npm install
 npm run dev
 ```
 
+## Hosting
+
+Live at **https://evpro-inc.github.io/evpro-quote/** (GitHub Pages, served from a
+`/evpro-quote/` subpath). Every push to `main` auto-builds and deploys via the
+`.github/workflows/deploy.yml` Action — no manual redeploy. The build sets
+`BASE_PATH=/evpro-quote/`; local dev and any root-domain host (e.g. Vercel) use `/`.
+
 ## Deploy the edge function
 
 ```bash
