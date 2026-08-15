@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import Field from './Field.jsx'
 import MakePicker from './MakePicker.jsx'
 import MakeLogo from './MakeLogo.jsx'
@@ -14,8 +15,6 @@ export default function VehicleCard({
 }) {
   const set = (key) => (e) => onChange({ ...vehicle, [key]: e.target.value })
 
-  // Changing make/model cascades: a new make clears model+trim; a new model
-  // clears trim — stale dependent selections can't survive.
   const setMake = (make) =>
     onChange({ ...vehicle, make, model: '', modelOther: '', trim: '', trimOther: '' })
   const setModel = (e) =>
@@ -31,6 +30,11 @@ export default function VehicleCard({
   const qty = vehicleQty(vehicle)
   const setQty = (n) => onChange({ ...vehicle, qty: Math.max(1, n) })
   const toggleProduct = (key) => onChange({ ...vehicle, [key]: !vehicle[key] })
+
+  const hasMore = Boolean(
+    vehicle.color || vehicle.dailyMiles || vehicle.annualMiles || vehicle.targetDelivery || vehicle.comments,
+  )
+  const [showMore, setShowMore] = useState(hasMore)
 
   if (!expanded) {
     const chosen = PRODUCTS.filter((p) => vehicle[p.key])
@@ -66,8 +70,22 @@ export default function VehicleCard({
           <span className="chev open" aria-hidden="true"><ChevronIcon /></span>
         </button>
         <div className="vehicle-actions">
+          <div className="qty-mini" role="group" aria-label="Quantity">
+            <span className="qty-mini-label">Qty</span>
+            <button type="button" className="qty-mini-btn" onClick={() => setQty(qty - 1)} disabled={qty <= 1} aria-label="Decrease quantity">−</button>
+            <input
+              className="qty-mini-input"
+              type="number"
+              min="1"
+              value={vehicle.qty}
+              onChange={(e) => onChange({ ...vehicle, qty: e.target.value })}
+              onBlur={() => setQty(qty)}
+              aria-label="Quantity"
+            />
+            <button type="button" className="qty-mini-btn" onClick={() => setQty(qty + 1)} aria-label="Increase quantity">+</button>
+          </div>
           <button type="button" className="icon-btn" onClick={onDuplicate} title="Duplicate this vehicle">
-            <CopyIcon /> Duplicate
+            <CopyIcon /> <span className="icon-btn-text">Duplicate</span>
           </button>
           <button
             type="button"
@@ -76,118 +94,69 @@ export default function VehicleCard({
             disabled={!canRemove}
             title={canRemove ? 'Remove this vehicle' : 'Keep at least one vehicle'}
           >
-            <TrashIcon /> Remove
+            <TrashIcon /> <span className="icon-btn-text">Remove</span>
           </button>
         </div>
       </div>
 
-      {/* Vehicle — identity + details together, right under the header */}
-      <div className="vsection">
-        <span className="group-label">Vehicle</span>
-
-        <div className="grid">
-          <Field label="Make">
-            <MakePicker value={vehicle.make} onChange={setMake} />
-          </Field>
-          <Field label="Model">
-            {models ? (
-              <select value={vehicle.model} onChange={setModel}>
-                <option value="">Select a model</option>
-                {models.map((m) => <option key={m} value={m}>{m}</option>)}
-                <option value="Other">Other</option>
-              </select>
-            ) : (
-              <input
-                value={vehicle.model}
-                onChange={setModelText}
-                disabled={!vehicle.make}
-                placeholder={vehicle.make ? '' : 'Select a make first'}
-              />
-            )}
-          </Field>
-          <Field label="Trim">
-            {trims ? (
-              <select value={vehicle.trim} onChange={set('trim')}>
-                <option value="">Select a trim</option>
-                {trims.map((t) => <option key={t} value={t}>{t}</option>)}
-                <option value="Other">Other</option>
-              </select>
-            ) : (
-              <input
-                value={vehicle.trim}
-                onChange={set('trim')}
-                disabled={!hasModel}
-                placeholder={hasModel ? '' : 'Pick a model first'}
-              />
-            )}
-          </Field>
-        </div>
-
-        {vehicle.model === 'Other' && (
-          <Field label="Model (type it in)" className="mt">
-            <input value={vehicle.modelOther} onChange={set('modelOther')} autoFocus />
-          </Field>
-        )}
-        {vehicle.trim === 'Other' && (
-          <Field label="Trim (type it in)" className="mt">
-            <input value={vehicle.trimOther} onChange={set('trimOther')} autoFocus />
-          </Field>
-        )}
-
-        <div className="cond-row">
-          <span className="field-label">New / used</span>
-          <Segmented
-            options={CONDITIONS}
-            value={vehicle.condition}
-            onChange={(v) => onChange({ ...vehicle, condition: v })}
-            ariaLabel="New or used"
-          />
-        </div>
-
-        <div className="mt">
-          <span className="field-label">Exterior color</span>
-          <ColorPicker value={vehicle.color} onChange={(c) => onChange({ ...vehicle, color: c })} />
-        </div>
-
-        {/* Quantity — prominent stepper */}
-        <div className="qty-control">
-          <div className="qty-control-text">
-            <span className="qty-control-title">How many of this vehicle?</span>
-            <span className="qty-control-sub">Same spec at the same location — otherwise add a separate card.</span>
-          </div>
-          <div className="qty-stepper" role="group" aria-label="Quantity">
-            <button type="button" className="qty-btn" onClick={() => setQty(qty - 1)} disabled={qty <= 1} aria-label="Decrease quantity">−</button>
+      {/* Essentials */}
+      <div className="grid">
+        <Field label="Make">
+          <MakePicker value={vehicle.make} onChange={setMake} />
+        </Field>
+        <Field label="Model">
+          {models ? (
+            <select value={vehicle.model} onChange={setModel}>
+              <option value="">Select a model</option>
+              {models.map((m) => <option key={m} value={m}>{m}</option>)}
+              <option value="Other">Other</option>
+            </select>
+          ) : (
             <input
-              className="qty-input"
-              type="number"
-              min="1"
-              value={vehicle.qty}
-              onChange={(e) => onChange({ ...vehicle, qty: e.target.value })}
-              onBlur={() => setQty(qty)}
-              aria-label="Quantity"
+              value={vehicle.model}
+              onChange={setModelText}
+              disabled={!vehicle.make}
+              placeholder={vehicle.make ? '' : 'Select a make first'}
             />
-            <button type="button" className="qty-btn" onClick={() => setQty(qty + 1)} aria-label="Increase quantity">+</button>
-          </div>
-        </div>
+          )}
+        </Field>
+        <Field label="Trim">
+          {trims ? (
+            <select value={vehicle.trim} onChange={set('trim')}>
+              <option value="">Select a trim</option>
+              {trims.map((t) => <option key={t} value={t}>{t}</option>)}
+              <option value="Other">Other</option>
+            </select>
+          ) : (
+            <input
+              value={vehicle.trim}
+              onChange={set('trim')}
+              disabled={!hasModel}
+              placeholder={hasModel ? '' : 'Pick a model first'}
+            />
+          )}
+        </Field>
       </div>
 
-      {/* Usage */}
-      <div className="vsection">
-        <span className="group-label">Usage</span>
-        <div className="grid">
-          <Field label="Max daily miles">
-            <input value={vehicle.dailyMiles} onChange={set('dailyMiles')} inputMode="numeric" />
-          </Field>
-          <Field label="Annual miles">
-            <select value={vehicle.annualMiles} onChange={set('annualMiles')}>
-              <option value="">Select</option>
-              {ANNUAL_MILEAGE_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
-            </select>
-          </Field>
-          <Field label="Target delivery">
-            <input type="date" value={vehicle.targetDelivery} onChange={set('targetDelivery')} />
-          </Field>
-        </div>
+      {vehicle.model === 'Other' && (
+        <Field label="Model (type it in)" className="mt">
+          <input value={vehicle.modelOther} onChange={set('modelOther')} autoFocus />
+        </Field>
+      )}
+      {vehicle.trim === 'Other' && (
+        <Field label="Trim (type it in)" className="mt">
+          <input value={vehicle.trimOther} onChange={set('trimOther')} autoFocus />
+        </Field>
+      )}
+
+      <div className="cond-row">
+        <span className="field-label">New / used</span>
+        <Segmented
+          options={CONDITIONS}
+          value={vehicle.condition}
+          onChange={(v) => onChange({ ...vehicle, condition: v })}
+          ariaLabel="New or used"
+        />
       </div>
 
       {/* Garaging */}
@@ -208,7 +177,7 @@ export default function VehicleCard({
         </div>
       </div>
 
-      {/* Products — selectable cards */}
+      {/* Products */}
       <div className="vsection">
         <span className="group-label">Products needed</span>
         <div className="product-grid">
@@ -233,11 +202,43 @@ export default function VehicleCard({
         </div>
       </div>
 
-      {/* Comments */}
-      <div className="vsection">
-        <Field label="Other comments (uplifting needs, etc.)" className="col-full">
-          <textarea rows={2} value={vehicle.comments} onChange={set('comments')} />
-        </Field>
+      {/* Optional extras — collapsed by default to keep the card light */}
+      <div className="more-block">
+        <button
+          type="button"
+          className={`more-toggle${showMore ? ' open' : ''}`}
+          onClick={() => setShowMore((s) => !s)}
+          aria-expanded={showMore}
+        >
+          <ChevronIcon size={16} />
+          {showMore ? 'Hide extra details' : 'More details (color, mileage, delivery)'}
+        </button>
+
+        {showMore && (
+          <div className="more-panel">
+            <div>
+              <span className="field-label">Exterior color</span>
+              <ColorPicker value={vehicle.color} onChange={(c) => onChange({ ...vehicle, color: c })} />
+            </div>
+            <div className="grid mt">
+              <Field label="Max daily miles">
+                <input value={vehicle.dailyMiles} onChange={set('dailyMiles')} inputMode="numeric" />
+              </Field>
+              <Field label="Annual miles">
+                <select value={vehicle.annualMiles} onChange={set('annualMiles')}>
+                  <option value="">Select</option>
+                  {ANNUAL_MILEAGE_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+                </select>
+              </Field>
+              <Field label="Target delivery">
+                <input type="date" value={vehicle.targetDelivery} onChange={set('targetDelivery')} />
+              </Field>
+            </div>
+            <Field label="Other comments (uplifting needs, etc.)" className="col-full mt">
+              <textarea rows={2} value={vehicle.comments} onChange={set('comments')} />
+            </Field>
+          </div>
+        )}
       </div>
     </div>
   )
